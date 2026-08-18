@@ -2,8 +2,7 @@ import "./App.css";
 import { NavLink, Routes, Route } from "react-router-dom";
 import Home from "./Pages/Home.jsx";
 import Constitution from "./Pages/Constitution.jsx";
-import Resources from "./Pages/Resources.jsx";
-
+import Wakili from "./Pages/Wakili.jsx";
 function App() {
   return (
     <div className="page">
@@ -14,8 +13,14 @@ function App() {
         <div className="links">
           <NavLink to="/">Home</NavLink>
           <NavLink to="/constitution">Constitution</NavLink>
-          <NavLink to="/resources">Resources</NavLink>
-          <button>Learn More</button>
+          <NavLink to="/wakili">Wakili</NavLink>
+          <a
+            href="https://judiciary.go.ke/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <button>Learn More</button>
+          </a>
         </div>
       </nav>
 
@@ -23,10 +28,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/constitution" element={<Constitution />} />
-        <Route path="/resources" element={<Resources />} />
+        <Route path="/wakili" element={<Wakili />} />
       </Routes>
-
-      
     </div>
   );
 }

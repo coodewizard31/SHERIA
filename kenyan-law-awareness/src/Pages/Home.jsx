@@ -1,11 +1,63 @@
+import { useState, useEffect } from "react";
+
 function Home() {
+  /* 1. State for input search */
+  const [search, setSearch] = useState("");
+
+  /* 2. Counting chapters & Articles logic */
+  const [counts, setCounts] = useState([0, 0]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCounts(([chapters, articles]) => {
+        const nextChapters = chapters < 18 ? chapters + 1 : 18;
+        const nextArticles = articles < 264 ? articles + 4 : 264;
+
+        return [nextChapters, nextArticles];
+      });
+    }, 120);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  /* 3. Array to scan offences & their corresponding consequences */
+  const OFFENSES_DATA = [
+    {
+      title: "Capital Offenses",
+      type: "capital", // Red border CSS
+      description: "Serious offenses carrying maximum legal penalties.",
+      crimes: [
+        "Murder",
+        "Robbery with Violence",
+        "Treason",
+        "Attempted Murder",
+      ],
+    },
+    {
+      title: "Medium Offenses",
+      type: "medium", // Orange border CSS
+      description: "Serious crimes requiring formal court prosecution.",
+      crimes: ["Theft", "Assault", "Fraud", "Burglary", "Bestiality"],
+    },
+    {
+      title: "Petty Offenses",
+      type: "petty", // Green border CSS
+      description: "Minor legal violations and public nuisances.",
+      crimes: [
+        "Traffic Infractions",
+        "Public Nuisance",
+        "Trespassing",
+        "Littering",
+      ],
+    },
+  ];
+
   return (
     <>
-      {/* HERO */}
+      {/* HERO SECTION */}
       <section className="hero">
         <div className="hero-text">
           <p>SHERIA</p>
-
           <h1>
             Ignorance of the law is no defense. Every citizen has a
             constitutional duty to respect, uphold, and defend the Constitution
@@ -16,7 +68,6 @@ function Home() {
         <div className="hero-bottom">
           <div>
             <p className="small-title">YOUR RIGHTS MATTER</p>
-
             <p>
               <i>
                 Understanding the law empowers you to know your rights,
@@ -32,10 +83,12 @@ function Home() {
         </div>
       </section>
 
-      {/* WHY IT MATTERS */}
+      {/* WHY IT MATTERS SECTION */}
       <section className="why">
         <div className="heading">
-          <p><i>Why does it matter ?</i></p>
+          <p>
+            <i>Why does it matter ?</i>
+          </p>
           <h2>Why constitutional literacy matters</h2>
         </div>
 
@@ -44,7 +97,6 @@ function Home() {
             Understanding the Constitution helps citizens understand their
             rights and responsibilities.
           </p>
-
           <p>
             It also promotes justice, accountability and responsible
             citizenship.
@@ -52,68 +104,71 @@ function Home() {
         </div>
       </section>
 
-      {/* CONSEQUENCES */}
+      {/* CONSEQUENCES / OFFENSES SECTION */}
       <section className="consequences">
         <p>KNOW YOUR RIGHTS</p>
-
         <h2>The legal scale of consequences</h2>
-
         <p className="intro">
           The law affects every aspect of our lives. Understanding it helps us
           make better decisions.
         </p>
 
+        {/* SEARCH BOX */}
+        <div className="search-box">
+          <input
+            type="text"
+            placeholder="Type a crime (e.g., Murder, Theft, Littering)..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
+        {/* CARDS LIST */}
         <div className="cards">
-          <div className="card">
-            <h3>Health Policies</h3>
+          {/* CARDS LIST */}
+          <div className="cards">
+            {OFFENSES_DATA.map((card) => {
+              // 1. Filter crimes in this category that match what the user typed
+              const matchedCrimes =
+                search.trim() === ""
+                  ? []
+                  : card.crimes.filter((crime) =>
+                      crime.toLowerCase().includes(search.toLowerCase()),
+                    );
 
-            <p>Know your rights when accessing healthcare services.</p>
+              const hasMatch = matchedCrimes.length > 0;
 
-            <ul>
-              <li>Right to healthcare</li>
-              <li>Patient rights</li>
-              <li>Access to information</li>
-            </ul>
-          </div>
+              return (
+                <div
+                  key={card.title}
+                  className={`card card-${card.type} ${hasMatch ? "lift" : "empty"}`}
+                >
+                  <h3>{card.title}</h3>
+                  <p>{card.description}</p>
 
-          <div className="card">
-            <h3>Criminal Policies</h3>
-
-            <p>Understand how criminal law protects citizens and society.</p>
-
-            <ul>
-              <li>Right to a fair trial</li>
-              <li>Presumption of innocence</li>
-              <li>Legal representation</li>
-            </ul>
-          </div>
-
-          <div className="card">
-            <h3>Justice Policies</h3>
-
-            <p>
-              Learn how the justice system works and how citizens can access it.
-            </p>
-
-            <ul>
-              <li>Access to justice</li>
-              <li>Equality before the law</li>
-              <li>Protection of rights</li>
-            </ul>
+                  {/* 2. List stays empty until a match is typed */}
+                  <ul>
+                    {matchedCrimes.map((crime) => (
+                      <li key={crime} className="highlight">
+                        {crime}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* CONSTITUTION */}
+      {/* CONSTITUTION SECTION */}
       <section className="constitution">
         <div>
           <p>THE SUPREME LAW</p>
-
           <h2>
             The Constitution of Kenya 2010 is the ultimate shield for all
             citizens.
           </h2>
-
           <p>
             The Constitution protects fundamental rights and freedoms while
             establishing the responsibilities of every citizen.
@@ -121,8 +176,8 @@ function Home() {
 
           <div className="numbers">
             <strong>2010</strong>
-            <strong>6 Chapters</strong>
-            <strong>264 Articles</strong>
+            <strong>{counts[0]} Chapters</strong>
+            <strong>{counts[1]} Articles</strong>
           </div>
         </div>
 
@@ -132,12 +187,10 @@ function Home() {
         />
       </section>
 
-      {/* CTA */}
+      {/* CTA SECTION */}
       <section className="cta">
         <p>YOUR RIGHTS. YOUR RESPONSIBILITY.</p>
-
         <h2>Equip yourself with legal wisdom today.</h2>
-
         <p>
           Knowing the law is the first step toward protecting your rights and
           becoming a responsible citizen.
@@ -148,26 +201,24 @@ function Home() {
           <button className="outline">LEARN YOUR RIGHTS</button>
         </div>
       </section>
+
+      {/* FOOTER */}
       <footer>
         <div>
           <h3>SHERIA</h3>
           <p>
-            Promoting constitutional awareness and responsible citizenship in
-            Kenya.
+            Promoting constitutional awareness and Constitutionalism makes a
+            better Kenya .
           </p>
         </div>
-
         <div>
-          <h4>QUICK LINKS</h4>
-          <p>About</p>
-          <p>Resources</p>
-          <p>Contact</p>
+          <h3>Copy Right ©.</h3>
+          <p> sheria kenya all rights reserved</p>
         </div>
 
         <div>
           <h4>LEGAL</h4>
-          <p>Privacy Policy</p>
-          <p>Terms</p>
+          <p>Privacy Policy & terms</p>
         </div>
       </footer>
     </>
